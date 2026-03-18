@@ -1,17 +1,20 @@
 package lib;
 
 public class Tuple <Generic1, Generic2> {
-    private Generic1 v1;
-    private Generic2 v2;
+    private Generic1 key;
+    private Generic2 value;
 
-    Tuple(Generic1 v1, Generic2 v2){
-        this.v1 = v1;
-        this.v2 = v2;
+    Tuple(Generic1 key, Generic2 value){
+        this.key = key;
+        this.value = value;
     }
-    public Generic1 getV1() {
-        return v1;
+    public Generic1 getKey() {
+        return key;
     }
-    public Generic2 getV2() {
-        return v2;
+    public Generic2 getValue() {
+        return value;
+    }
+    public void setValue(Generic2 value) {
+        this.value = value;
     }
 }
