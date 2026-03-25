@@ -1,20 +1,28 @@
 package lib;
 
-public class Tuple <Generic1, Generic2> {
-    private Generic1 key;
-    private Generic2 value;
+public class Tuple {
+    private Character key;
+    private Integer value;
 
-    Tuple(Generic1 key, Generic2 value){
+    Tuple(Character key){
+        this.key = key;
+    }
+
+    public Tuple(Character key, Integer value){
         this.key = key;
         this.value = value;
     }
-    public Generic1 getKey() {
+    public Character getKey() {
         return key;
     }
-    public Generic2 getValue() {
+    public Integer getValue() {
         return value;
     }
-    public void setValue(Generic2 value) {
+    public void setValue(Integer value) {
         this.value = value;
+    }
+    @Override
+    public String toString() {
+        return  "( " + key + ", " + value + " )";
     }
 }
