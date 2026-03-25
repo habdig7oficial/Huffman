@@ -21,6 +21,21 @@ public class Tuple {
     public void setValue(Integer value) {
         this.value = value;
     }
+
+    /* 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof this) {
+            if (obj as) {
+                
+            }
+        }
+        else 
+            return false;
+
+    };
+    */
+
     @Override
     public String toString() {
         return  "( " + key + ", " + value + " )";

@@ -27,22 +27,42 @@ public class Program {
     }
 
     public static void heap(Tuple []vec, Tuple []heap, int step, int pos){
-        if (step > vec.length) {
+        //System.out.printf("Step: %d", step);
+        if (step > vec.length || pos > heap.length) 
             return;
-        }
-        int left = vec[step] == null?vec[step].getValue() : 0;
-        int right = vec[step + 1] == null?vec[step + 1].getValue() : 0;
-        heap[pos] = new Tuple('\0',  left + right );
-        if (vec.length - step <= 2) {
-            heap[2 * pos + 1] = vec[step];
-            heap[2 * pos + 2] = vec[step + 1];
-            return;
-        }
-        heap[2 * pos + 1] = vec[step];
-        System.out.println(vec[step]);
-        System.out.printf("%s - %d\n", heap[2 * pos + 1], 2 * pos + 1);
-        heap(vec, heap, step + 1, 2 * pos + 2);
         
+        int left = vec[step] == null ? vec[step].getValue() : 0;
+        int right = vec[step + 1] == null ? vec[step + 1].getValue() : 0;
+        heap[pos] = new Tuple('\0',  left + right);
+
+        if (vec.length - step <= 2) {
+                heap[2 * pos + 1] = vec[step];
+                heap[2 * pos + 2] = vec[step + 1];
+            return;
+        }
+        if(2 * pos + 1 < heap.length){
+            heap[2 * pos + 1] = vec[step];
+            //System.out.println(vec[step]);
+            //System.out.printf("%s - %d\n", heap[2 * pos + 1], 2 * pos + 1);
+        }
+        heap(vec, heap, step + 1, 2 * pos + 2);
+    }
+
+    private static int walkAndSearch(Tuple []minHeap, char target, int step){
+        if (step > minHeap.length || minHeap[step] == null) {
+            return -1;
+        }
+        else if(minHeap[step].getKey() == target){
+            return step;
+        }
+        int left = walkAndSearch(minHeap, target, 2 * step + 1);
+        int right = walkAndSearch(minHeap, target, 2 * step + 2);
+        if (left != -1) 
+            return left;
+        else if(right != -1)
+            return left;
+        else
+            return -1;
     }
 
     public static void main(String[] args) {
@@ -87,6 +107,7 @@ public class Program {
             } 
             catch (Exception err) {
                 System.out.printf("Fehler beim Verarbeiten der Datei\t/\tError in handling file\t/\tError Gerenciando Arquivo:\n%s", err.getMessage());
+                return;
             }
         }
         System.out.println("-----------------------");
@@ -95,14 +116,27 @@ public class Program {
 
         
         for (int i = 0; i < characters.length; i++) {
-            System.out.println(characters[i]);
+            if(characters[i] != null)
+                System.out.println(characters[i]);
         }
 
         System.out.println("------------------");
 
+        System.out.println(totalChars);
+
         Tuple []minHeap = new Tuple[2 * totalChars - 1];
 
-        //heap(characters, minHeap, 0, 0);
+        heap(characters, minHeap, 0, 0);
 
+        System.out.println("\n-----------------------------");
+
+        for (int i = 0; i < minHeap.length; i++) {
+            if (minHeap[i] != null) 
+                System.out.printf("%d - %s \t%d\n", i, minHeap[i], minHeap[i].getValue());
+        }
+
+        System.out.println("\n-----------------------------");
+
+        System.out.printf("%d\n", walkAndSearch(minHeap, 'ä', 0));
     }
 }
