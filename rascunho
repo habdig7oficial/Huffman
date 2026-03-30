@@ -1,0 +1,65 @@
+├── (Internal) Freq: 2114
+│   ├── (Internal) Freq: 864
+│   │   ├── (Internal) Freq: 401
+│   │   │   ├── (Internal) Freq: 196
+│   │   │   │   ├── 'l' Freq: 97
+│   │   │   │   └── 'r' Freq: 99
+│   │   │   └── (Internal) Freq: 205
+│   │   │       ├── 'n' Freq: 101
+│   │   │       └── (Internal) Freq: 104
+│   │   │           ├── (Internal) Freq: 49
+│   │   │           │   ├── (Internal) Freq: 24
+│   │   │           │   │   ├── 'h' Freq: 11
+│   │   │           │   │   └── (Internal) Freq: 13
+│   │   │           │   │       ├── 'S' Freq: 6
+│   │   │           │   │       └── (Internal) Freq: 7
+│   │   │           │   │           ├── 'x' Freq: 3
+│   │   │           │   │           └── (Internal) Freq: 4
+│   │   │           │   │               ├── 'C' Freq: 2
+│   │   │           │   │               └── 'M' Freq: 2
+│   │   │           │   └── 'q' Freq: 25
+│   │   │           └── (Internal) Freq: 55
+│   │   │               ├── 'v' Freq: 25
+│   │   │               └── ',' Freq: 30
+│   │   └── (Internal) Freq: 463
+│   │       ├── 'e' Freq: 210
+│   │       └── (Internal) Freq: 253
+│   │           ├── 't' Freq: 126
+│   │           └── (Internal) Freq: 127
+│   │               ├── 'd' Freq: 57
+│   │               └── 'c' Freq: 70
+│   └── (Internal) Freq: 1250
+│       ├── (Internal) Freq: 577
+│       │   ├── (Internal) Freq: 264
+│       │   │   ├── 'a' Freq: 128
+│       │   │   └── 's' Freq: 136
+│       │   └── (Internal) Freq: 313
+│       │       ├── (Internal) Freq: 156
+│       │       │   ├── (Internal) Freq: 74
+│       │       │   │   ├── (Internal) Freq: 35
+│       │       │   │   │   ├── 'f' Freq: 16
+│       │       │   │   │   └── 'g' Freq: 19
+│       │       │   │   └── '.' Freq: 39
+│       │       │   └── (Internal) Freq: 82
+│       │       │       ├── 'p' Freq: 41
+│       │       │       └── (Internal) Freq: 41
+│       │       │           ├── (Internal) Freq: 19
+│       │       │           │   ├── (Internal) Freq: 9
+│       │       │           │   │   ├── (Internal) Freq: 4
+│       │       │           │   │   │   ├── 'j' Freq: 2
+│       │       │           │   │   │   └── (Internal) Freq: 2
+│       │       │           │   │   └── 'N' Freq: 5
+│       │       │           │   └── (Internal) Freq: 10
+│       │       │           │       ├── 'P' Freq: 5
+│       │       │           │       └── (Internal) Freq: 5
+│       │       │           │           ├── (Internal) Freq: 2
+│       │       │           │           └── 'V' Freq: 3
+│       │       │           └── 'b' Freq: 22
+│       │       └── 'u' Freq: 157
+│       └── (Internal) Freq: 673
+│           ├── ' ' Freq: 319
+│           └── (Internal) Freq: 354
+│               ├── 'i' Freq: 173
+│               └── (Internal) Freq: 181
+│                   ├── 'm' Freq: 86
+│                   └── 'o' Freq: 95

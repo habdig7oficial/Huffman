@@ -1,17 +1,18 @@
 import java.io.File;
 import java.util.Scanner;
 
-import lib.Tuple;
+import lib.TupleChar;
 import lib.Node;
 import lib.Queue;
+import lib.Tuple;
 
 public class Program {
 
     /* REPLACE THIS HORRIBLE BUBLE SORT  */
-    public static void bubbleSort(Tuple []vec){
+    public static void bubbleSort(TupleChar []vec){
         for (int i = 0; i < vec.length - 1; i++) {
             for (int j = 0; j < vec.length - 1; j++) {
-                Tuple aux;
+                TupleChar aux;
                 if (vec[j] == null) {
                     aux = vec[j];
                     vec[j] = vec[j + 1];
@@ -28,9 +29,9 @@ public class Program {
         }
     }
 
-    public static Tuple[] buildMinHeap(Tuple[] vec) {
+    public static TupleChar[] buildMinHeap(TupleChar[] vec) {
         // Extract non-null elements
-        Tuple[] heap = new Tuple[256];
+        TupleChar[] heap = new TupleChar[256];
         int n = 0;
         for (int i = 0; i < vec.length; i++) {
             if (vec[i] != null) {
@@ -46,7 +47,7 @@ public class Program {
         return heap;
     }
 
-    private static void heapifyDown(Tuple[] heap, int i, int n) {
+    private static void heapifyDown(TupleChar[] heap, int i, int n) {
         int smallest = i;
         int left = 2 * i + 1;
         int right = 2 * i + 2;
@@ -59,7 +60,7 @@ public class Program {
         }
         
         if (smallest != i) {
-            Tuple temp = heap[i];
+            TupleChar temp = heap[i];
             heap[i] = heap[smallest];
             heap[smallest] = temp;
             heapifyDown(heap, smallest, n);
@@ -68,8 +69,9 @@ public class Program {
 
     private static Node<Character>[] treeArray;
     private static int treeSize = 0;
+    private static int maxIndex = 0;
 
-    public static Node<Character>[] buildHuffmanTree(Tuple[] characters) throws Exception {
+    public static Node<Character>[] buildHuffmanTree(TupleChar[] characters) throws Exception {
         Queue<Node<Character>> nodeQueue = new Queue<>();
         
         // Create leaf nodes for each character and add to queue
@@ -124,14 +126,31 @@ public class Program {
         
         // Return the root in array form
         Node<Character> root = nodeQueue.pop();
-        treeArray = new Node[256];
+        
+        // First pass: calculate the maximum index needed
+        maxIndex = 0;
+        calculateMaxIndex(root, 0);
+        
+        // Allocate array with exact size needed
+        treeArray = new Node[maxIndex + 1];
         treeSize = 0;
+        
+        // Second pass: store tree in array
         storeTreeInArray(root, 0);
         return treeArray;
     }
     
+    private static void calculateMaxIndex(Node<Character> node, int index) {
+        if (node == null) {
+            return;
+        }
+        maxIndex = Math.max(maxIndex, index);
+        calculateMaxIndex(node.getLeft(), 2 * index + 1);
+        calculateMaxIndex(node.getRight(), 2 * index + 2);
+    }
+    
     private static void storeTreeInArray(Node<Character> node, int index) {
-        if (node == null || index >= treeArray.length) {
+        if (node == null) {
             return;
         }
         treeArray[index] = node;
@@ -186,6 +205,35 @@ public class Program {
         }
     }
 
+    private static Tuple<String, Boolean> search(Node<Character>[] huffmanHeap, Character target, int index){
+        if (index >= huffmanHeap.length) {
+            return new Tuple<String, Boolean>("", false);
+        } 
+        else if (huffmanHeap[index] != null && huffmanHeap[index].getKey() == target) {
+            return new Tuple<String, Boolean>("", true);
+        }
+
+        Tuple<String, Boolean> left, right, res;
+
+        left = search(huffmanHeap, target, 2 * index + 1);
+        right = search(huffmanHeap, target, 2 * index + 2);
+
+        boolean direction;
+        if(left.getValue()){
+            res = left;
+            direction = false;
+        }
+        else if(right.getValue()){
+            res = right;
+            direction = true;
+        }
+        else 
+            return left;
+        res.setKey(res.getKey() + (direction ? "0" : "1"));
+
+        return res;
+    }
+
     public static void main(String[] args) {
         String paths[] = new String[1];
         String buffer;
@@ -202,21 +250,22 @@ public class Program {
             }
         }
 
-        Tuple characters[] = new Tuple[256]; 
+        TupleChar characters[] = new TupleChar[256]; 
         int totalChars = 0;
-
+        String fileBuffer = "";
         for(String path : paths){
             File file = new File(path);
             try {                
                 Scanner scanf = new Scanner(file);
                 while (scanf.hasNextLine()) {
                     buffer = scanf.nextLine();
+                    fileBuffer += buffer + "\n";
                     for (int i = 0; i < buffer.length(); i++) {
                         //System.out.printf("Char: %s\n", buffer.charAt(i));
                         //tree.insert(buffer.charAt(i));
-                        Tuple aux = characters[(int)buffer.charAt(i)];
+                        TupleChar aux = characters[(int)buffer.charAt(i)];
                         if(aux == null){
-                            characters[(int)buffer.charAt(i)] = new Tuple(buffer.charAt(i), 0);
+                            characters[(int)buffer.charAt(i)] = new TupleChar(buffer.charAt(i), 0);
                             totalChars++;
                         }
                         else 
@@ -257,6 +306,9 @@ public class Program {
             System.out.println("\nTree Structure (stored in array):");
             System.out.println("-----------------------------");
             printTree(huffmanTree);
+
+
+
         } catch (Exception e) {
             System.out.printf("Error building Huffman tree: %s\n", e.getMessage());
         }
