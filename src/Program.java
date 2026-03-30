@@ -28,24 +28,50 @@ public class Program {
 
     public static void heap(Tuple []vec, Tuple []heap, int step, int pos){
         //System.out.printf("Step: %d", step);
-        if (step > vec.length || pos > heap.length) 
+        if (step >= vec.length || pos > heap.length) 
             return;
         
-        int left = vec[step] == null ? vec[step].getValue() : 0;
-        int right = vec[step + 1] == null ? vec[step + 1].getValue() : 0;
+        int left, right;
+
+        if(step < vec.length && vec[step] != null)
+            left = vec[step].getValue();
+        else 
+            left = 0;
+
+        if(step + 1< vec.length && vec[step + 1] != null)
+            right = vec[step + 1].getValue();
+        else 
+            right = 0;
+
+        System.out.printf("L: %d | R: %d | step: %d | pos: %d | left %d | e: %s\n", left, right, step, 2 * step, vec.length - step, vec[step]);
+
         heap[pos] = new Tuple('\0',  left + right);
 
+        if (pos / 2 > 0)
+            heap[pos / 2].incValue(heap[pos].getValue());
+
         if (vec.length - step <= 2) {
-                heap[2 * pos + 1] = vec[step];
-                heap[2 * pos + 2] = vec[step + 1];
+                if(step < vec.length)
+                    heap[2 * pos + 1] = vec[step];
+                if(step + 1 < vec.length)
+                    heap[2 * pos + 2] = vec[step + 1];
             return;
         }
+
+        /*
+        make run ARGS="../test/input1.txt"
+
+        heap[pos] = new Tuple('\0',  left + right);
+            
         if(2 * pos + 1 < heap.length){
-            heap[2 * pos + 1] = vec[step];
+            //heap[2 * pos + 1] = vec[step];
             //System.out.println(vec[step]);
             //System.out.printf("%s - %d\n", heap[2 * pos + 1], 2 * pos + 1);
-        }
-        heap(vec, heap, step + 1, 2 * pos + 2);
+        } */
+        
+        heap(vec, heap, step + 1, 2 * pos + 1);
+        heap(vec, heap, step + 2, 2 * pos + 2);
+        //heap(vec, heap, step + 2, 2 * pos + 2);
     }
 
     private static int walkAndSearch(Tuple []minHeap, char target, int step){
@@ -117,14 +143,15 @@ public class Program {
         
         for (int i = 0; i < characters.length; i++) {
             if(characters[i] != null)
-                System.out.println(characters[i]);
+                System.out.printf("%s - %d\n", characters[i], i);
         }
 
         System.out.println("------------------");
 
         System.out.println(totalChars);
 
-        Tuple []minHeap = new Tuple[2 * totalChars - 1];
+        /*
+        Tuple []minHeap = new Tuple[2 * totalChars + 2];
 
         heap(characters, minHeap, 0, 0);
 
@@ -137,6 +164,20 @@ public class Program {
 
         System.out.println("\n-----------------------------");
 
-        System.out.printf("%d\n", walkAndSearch(minHeap, 'ä', 0));
-    }
+        System.out.printf("%d\n", walkAndSearch(minHeap, 'i', 0));
+        System.out.printf("Heap Size: %d\n", minHeap.length);
+
+        */
+
+        Tuple []minHeap = new Tuple[2 * totalChars + 2];
+        Tuple exTuple[] = {new Tuple('a', 5), new Tuple('b', 9),new Tuple('c', 12)};
+
+        bubbleSort(exTuple);
+
+        heap(exTuple, minHeap, 0, 0);
+
+        for (int k = 0; k < minHeap.length; k++) {
+            System.out.printf("%s\n", minHeap[k]);
+        }
+    } 
 }

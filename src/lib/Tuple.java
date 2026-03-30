@@ -22,6 +22,9 @@ public class Tuple {
         this.value = value;
     }
 
+    public void incValue(Integer value) {
+        this.value += value;
+    }
     /* 
     @Override
     public boolean equals(Object obj) {
@@ -38,6 +41,6 @@ public class Tuple {
 
     @Override
     public String toString() {
-        return  "( " + key + ", " + value + " )";
+        return  "( \'" + key + "\', " + value + " )";
     }
 }
