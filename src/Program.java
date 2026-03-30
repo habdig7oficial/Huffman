@@ -2,6 +2,8 @@ import java.io.File;
 import java.util.Scanner;
 
 import lib.Tuple;
+import lib.Node;
+import lib.Queue;
 
 public class Program {
 
@@ -17,7 +19,7 @@ public class Program {
                 }
                 else if (vec[j + 1] == null) 
                     continue;
-                else if (vec[j].getValue() < vec[j + 1].getValue()) {
+                else if (vec[j].getValue() > vec[j + 1].getValue()) {
                     aux = vec[j];
                     vec[j] = vec[j + 1];
                     vec[j + 1] = aux;
@@ -26,43 +28,162 @@ public class Program {
         }
     }
 
-    public static void heap(Tuple []vec, Tuple []heap, int step, int pos){
-        //System.out.printf("Step: %d", step);
-        if (step > vec.length || pos > heap.length) 
-            return;
+    public static Tuple[] buildMinHeap(Tuple[] vec) {
+        // Extract non-null elements
+        Tuple[] heap = new Tuple[256];
+        int n = 0;
+        for (int i = 0; i < vec.length; i++) {
+            if (vec[i] != null) {
+                heap[n++] = vec[i];
+            }
+        }
         
-        int left = vec[step] == null ? vec[step].getValue() : 0;
-        int right = vec[step + 1] == null ? vec[step + 1].getValue() : 0;
-        heap[pos] = new Tuple('\0',  left + right);
-
-        if (vec.length - step <= 2) {
-                heap[2 * pos + 1] = vec[step];
-                heap[2 * pos + 2] = vec[step + 1];
-            return;
+        // Build min-heap through heapify-down process
+        for (int i = n / 2 - 1; i >= 0; i--) {
+            heapifyDown(heap, i, n);
         }
-        if(2 * pos + 1 < heap.length){
-            heap[2 * pos + 1] = vec[step];
-            //System.out.println(vec[step]);
-            //System.out.printf("%s - %d\n", heap[2 * pos + 1], 2 * pos + 1);
-        }
-        heap(vec, heap, step + 1, 2 * pos + 2);
+        
+        return heap;
     }
 
-    private static int walkAndSearch(Tuple []minHeap, char target, int step){
-        if (step > minHeap.length || minHeap[step] == null) {
-            return -1;
+    private static void heapifyDown(Tuple[] heap, int i, int n) {
+        int smallest = i;
+        int left = 2 * i + 1;
+        int right = 2 * i + 2;
+        
+        if (left < n && heap[left] != null && heap[left].getValue() < heap[smallest].getValue()) {
+            smallest = left;
         }
-        else if(minHeap[step].getKey() == target){
-            return step;
+        if (right < n && heap[right] != null && heap[right].getValue() < heap[smallest].getValue()) {
+            smallest = right;
         }
-        int left = walkAndSearch(minHeap, target, 2 * step + 1);
-        int right = walkAndSearch(minHeap, target, 2 * step + 2);
-        if (left != -1) 
-            return left;
-        else if(right != -1)
-            return left;
-        else
-            return -1;
+        
+        if (smallest != i) {
+            Tuple temp = heap[i];
+            heap[i] = heap[smallest];
+            heap[smallest] = temp;
+            heapifyDown(heap, smallest, n);
+        }
+    }
+
+    private static Node<Character>[] treeArray;
+    private static int treeSize = 0;
+
+    public static Node<Character>[] buildHuffmanTree(Tuple[] characters) throws Exception {
+        Queue<Node<Character>> nodeQueue = new Queue<>();
+        
+        // Create leaf nodes for each character and add to queue
+        for (int i = 0; i < characters.length; i++) {
+            if (characters[i] != null) {
+                Node<Character> leaf = new Node<>(characters[i].getKey());
+                leaf.setCount(characters[i].getValue());
+                nodeQueue.push(leaf);
+            }
+        }
+        
+        // Build tree by combining two minimum frequency nodes
+        while (nodeQueue.length() > 1) {
+            // Extract all nodes and find two with minimum frequency
+            Node<Character>[] nodes = new Node[nodeQueue.length()];
+            for (int i = 0; i < nodes.length; i++) {
+                nodes[i] = nodeQueue.pop();
+            }
+            
+            // Find indices of two minimum nodes
+            int min1Index = 0;
+            int min2Index = 1;
+            if (nodes[min2Index].getCount() < nodes[min1Index].getCount()) {
+                int temp = min1Index;
+                min1Index = min2Index;
+                min2Index = temp;
+            }
+            
+            for (int i = 2; i < nodes.length; i++) {
+                if (nodes[i].getCount() < nodes[min1Index].getCount()) {
+                    min2Index = min1Index;
+                    min1Index = i;
+                } else if (nodes[i].getCount() < nodes[min2Index].getCount()) {
+                    min2Index = i;
+                }
+            }
+            
+            // Create parent node with combined frequency
+            Node<Character> parent = new Node<>('\0');
+            parent.setLeft(nodes[min1Index]);
+            parent.setRight(nodes[min2Index]);
+            parent.setCount(nodes[min1Index].getCount() + nodes[min2Index].getCount());
+            
+            // Add all remaining nodes and parent back to queue
+            for (int i = 0; i < nodes.length; i++) {
+                if (i != min1Index && i != min2Index) {
+                    nodeQueue.push(nodes[i]);
+                }
+            }
+            nodeQueue.push(parent);
+        }
+        
+        // Return the root in array form
+        Node<Character> root = nodeQueue.pop();
+        treeArray = new Node[256];
+        treeSize = 0;
+        storeTreeInArray(root, 0);
+        return treeArray;
+    }
+    
+    private static void storeTreeInArray(Node<Character> node, int index) {
+        if (node == null || index >= treeArray.length) {
+            return;
+        }
+        treeArray[index] = node;
+        treeSize = Math.max(treeSize, index + 1);
+        storeTreeInArray(node.getLeft(), 2 * index + 1);
+        storeTreeInArray(node.getRight(), 2 * index + 2);
+    }
+
+    public static void printTree(Node<Character>[] treeArray) {
+        if (treeArray == null || treeArray[0] == null) {
+            System.out.println("Tree is empty");
+            return;
+        }
+        printTreeHelper(0, "", true);
+    }
+
+    private static void printTreeHelper(int index, String prefix, boolean isLeft) {
+        if (index >= treeArray.length || treeArray[index] == null) {
+            return;
+        }
+
+        System.out.print(prefix);
+        if (isLeft) {
+            System.out.print("├── ");
+        } else {
+            System.out.print("└── ");
+        }
+
+        Node<Character> node = treeArray[index];
+        if (node.getKey() == '\0') {
+            System.out.println("(Internal) Freq: " + node.getCount());
+        } else {
+            System.out.println("'" + node.getKey() + "' Freq: " + node.getCount());
+        }
+
+        String newPrefix = prefix;
+        if (isLeft) {
+            newPrefix += "│   ";
+        } else {
+            newPrefix += "    ";
+        }
+
+        int leftIndex = 2 * index + 1;
+        int rightIndex = 2 * index + 2;
+
+        if (leftIndex < treeArray.length && treeArray[leftIndex] != null) {
+            printTreeHelper(leftIndex, newPrefix, true);
+        }
+
+        if (rightIndex < treeArray.length && treeArray[rightIndex] != null) {
+            printTreeHelper(rightIndex, newPrefix, false);
+        }
     }
 
     public static void main(String[] args) {
@@ -124,19 +245,20 @@ public class Program {
 
         System.out.println(totalChars);
 
-        Tuple []minHeap = new Tuple[2 * totalChars - 1];
-
-        heap(characters, minHeap, 0, 0);
-
-        System.out.println("\n-----------------------------");
-
-        for (int i = 0; i < minHeap.length; i++) {
-            if (minHeap[i] != null) 
-                System.out.printf("%d - %s \t%d\n", i, minHeap[i], minHeap[i].getValue());
+        try {
+            Node<Character>[] huffmanTree = buildHuffmanTree(characters);
+            
+            System.out.println("\n-----------------------------");
+            System.out.println("Huffman Tree built successfully!");
+            if (huffmanTree[0] != null) {
+                System.out.println("Root node frequency: " + huffmanTree[0].getCount());
+            }
+            System.out.println("Tree array size: " + treeSize);
+            System.out.println("\nTree Structure (stored in array):");
+            System.out.println("-----------------------------");
+            printTree(huffmanTree);
+        } catch (Exception e) {
+            System.out.printf("Error building Huffman tree: %s\n", e.getMessage());
         }
-
-        System.out.println("\n-----------------------------");
-
-        System.out.printf("%d\n", walkAndSearch(minHeap, 'ä', 0));
     }
 }

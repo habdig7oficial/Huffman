@@ -59,6 +59,9 @@ public class Node <Generic> {
     public void setCount() {
         this.count++;
     }
+    public void setCount(int value) {
+        this.count = value;
+    }
 
     public String toString() {
         return this.key.toString();
