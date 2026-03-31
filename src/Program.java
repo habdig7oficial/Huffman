@@ -164,31 +164,32 @@ public class Program {
         storeTreeInArray(node.getRight(), 2 * index + 2);
     }
 
-    public static void printTree(Node<Character>[] treeArray) {
+    public static String printTree(Node<Character>[] treeArray) {
         if (treeArray == null || treeArray[0] == null) {
-            System.out.println("Tree is empty");
-            return;
+            return "Tree is empty";
         }
-        printTreeHelper(0, "", true);
+        return printTreeHelper(0, "", true);
     }
 
-    private static void printTreeHelper(int index, String prefix, boolean isLeft) {
+    private static String printTreeHelper(int index, String prefix, boolean isLeft) {
         if (index >= treeArray.length || treeArray[index] == null) {
-            return;
+            return "";
         }
 
-        System.out.print(prefix);
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append(prefix);
         if (isLeft) {
-            System.out.print("├── ");
+            sb.append("├── ");
         } else {
-            System.out.print("└── ");
+            sb.append("└── ");
         }
 
         Node<Character> node = treeArray[index];
         if (node.getKey() == '\0') {
-            System.out.println("(Internal) Freq: " + node.getCount());
+            sb.append("(Internal) Freq: ").append(node.getCount()).append("\n");
         } else {
-            System.out.println("'" + node.getKey() + "' Freq: " + node.getCount());
+            sb.append("'").append(node.getKey()).append("' Freq: ").append(node.getCount()).append("\n");
         }
 
         String newPrefix = prefix;
@@ -202,12 +203,14 @@ public class Program {
         int rightIndex = 2 * index + 2;
 
         if (leftIndex < treeArray.length && treeArray[leftIndex] != null) {
-            printTreeHelper(leftIndex, newPrefix, true);
+            sb.append(printTreeHelper(leftIndex, newPrefix, true));
         }
 
         if (rightIndex < treeArray.length && treeArray[rightIndex] != null) {
-            printTreeHelper(rightIndex, newPrefix, false);
+            sb.append(printTreeHelper(rightIndex, newPrefix, false));
         }
+        
+        return sb.toString();
     }
 
     private static Tuple<Byte[], Boolean> search(Node<Character>[] huffmanHeap, Character target, int index, int iter) {
@@ -302,6 +305,7 @@ public class Program {
 
 
             try {
+                File treeTxtFile = new File(path + ".tree"); 
                 Node<Character>[] huffmanTree = buildHuffmanTree(characters);
 
                 System.out.println("\n-----------------------------");
@@ -312,12 +316,22 @@ public class Program {
                 System.out.println("Tree array size: " + treeSize);
                 System.out.println("\nTree Structure (stored in array):");
                 System.out.println("-----------------------------");
-                printTree(huffmanTree);
+                System.out.print(printTree(huffmanTree));
+                Files.write(treeTxtFile.toPath(), printTree(huffmanTree).getBytes(StandardCharsets.UTF_8));
 
                 File compressedFile = new File(path + ".huff");
                 FileOutputStream writer = new FileOutputStream(compressedFile);
 
+                ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+                ObjectOutputStream treeHeaderSize = new ObjectOutputStream(byteStream);
                 ObjectOutputStream treeHeader = new ObjectOutputStream(writer);
+
+                treeHeaderSize.writeObject(huffmanTree);
+                treeHeaderSize.flush();
+
+                byte[] byteArray = byteStream.toByteArray();
+
+                writer.write(byteArray.length);
 
                 treeHeader.writeObject(huffmanTree);
                 treeHeader.flush();
