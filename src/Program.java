@@ -322,20 +322,31 @@ public class Program {
                 treeHeader.writeObject(huffmanTree);
                 treeHeader.flush();
                 
+                int currentByte = 0;
+                int bitPosition = 0;
+                
                 for (int i = 0; i < fileBuffer.length(); i++) {
                     Tuple<Byte[], Boolean> s = search(huffmanTree, fileBuffer.charAt(i), 0, 0);
                     System.out.printf("%c' %b\n", fileBuffer.charAt(i), s.getValue());
 
                     for (byte b : s.getKey()) {
                         System.out.printf("%d",(int)b);
-                        writer.write(b);      
+                        currentByte |= ((b & 1) << (7 - bitPosition));
+                        bitPosition++;
+                        if (bitPosition == 8) {
+                            writer.write(currentByte);
+                            currentByte = 0;
+                            bitPosition = 0;
+                        }
                     }
-
 
                     System.out.println("\n-----");
                 }
 
-
+                // Flush remaining bits
+                if (bitPosition > 0) {
+                    writer.write(currentByte);
+                }
 
                 System.out.println("\n-----------------------------");
 
