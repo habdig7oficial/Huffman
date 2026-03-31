@@ -1,6 +1,7 @@
 package lib;
+import java.io.Serializable;
 
-public class Node <Generic> {
+public class Node <Generic> implements Serializable {
     private Generic key = null; 
     private Node<Generic> left = null, right = null;
 
